@@ -1,0 +1,20 @@
+<div id='basicdata'>
+
+<h2>Here you can modify your own data as employer as well as the basic data related to your employees</h2>
+
+<div>
+
+    <div class="col-md-11 active" ng-include="'partials/employer.html'"></div>
+    <div class="col-md-1" ng-class="employee != undefined ? 'active' : 'nonactive'" ng-include="'partials/employee.html'"></div>
+    <div class="col-md-1" ng-class="taxcard != undefined ? 'active' : 'nonactive'" ng-include="'partials/taxcard.html'"></div>
+
+    </div>
+    
+    <!-- @section ScriptToRunAtTheEnd
+{
+    <link href="~/Content/basicdata.min.css" rel="stylesheet" type="text/css" />
+    <script src=@Url.Content("~/Scripts/Vendor/jquery.livequery.min.js")> </script>
+    <script src=@Url.Content("~/Scripts/ui.js")> </script>
+}
+ -->
+</div>
