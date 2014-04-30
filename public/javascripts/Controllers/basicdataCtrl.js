@@ -1,4 +1,6 @@
-app.controller('basicdataCtrl', ['$scope', '$http',
+var basicdataControllers = angular.module('basicdataControllers', []);
+
+basicdataControllers.controller('basicdataCtrl', ['$scope', '$http',
     function ($scope, $http) {
         var getEmployer = function () {
             $http.get('../api/Employer').success(function (data) {
@@ -7,19 +9,21 @@ app.controller('basicdataCtrl', ['$scope', '$http',
             });
         };
         
+        $scope.foo = "Hello";
+
         $scope.getEmployer = getEmployer;
 
         getEmployer();
 
         $scope.getEmployee = function (id) {
-            $http.get('../api/Employee/' + id).success(function (data) {
+            $http.get('../api/Employee/?' + id).success(function (data) {
                 $scope.employee = data;
                 $scope.taxcard = undefined;
             });
         };
 
         $scope.getTaxcard = function (id) {
-            $http.get('../api/Taxcard/' + id).success(function (data) {
+            $http.get('../api/Taxcard/?' + id).success(function (data) {
                 $scope.taxcard = data;
             });
         };

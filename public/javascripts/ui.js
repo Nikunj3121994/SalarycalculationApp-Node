@@ -6,7 +6,7 @@
     };
 
     var resetColumnSizes = function () {
-        var $activeOnes = $('div[ng-app]').children('div.active');
+        var $activeOnes = $('#basicdata').children('div.active');
         var count = $activeOnes.length;
         var classnameToApply = 'col-md-' + getBootstrapColumnSize(count);
 
@@ -28,7 +28,7 @@
         });
     };
 
-    $('div.active', 'div[ng-app]').livequery(
+    $('div.active', '#basicdata').livequery(
         function () {
             resetColumnSizes();
         },

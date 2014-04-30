@@ -1,6 +1,7 @@
 var app = angular.module('app', [
-	'ngRoute'
-	]);
+	'ngRoute',
+	'basicdataControllers', 
+	'salaryCalculationControllers']);
 
 app.config(['$routeProvider',
 	function($routeProvider) {

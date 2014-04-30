@@ -1,7 +1,7 @@
 div.active {
   background-color: #e7c9d3;
 }
-div[ng-app] div.nonactive {
+#basicdata div.nonactive {
   display: none;
 }
 @media (min-width: 600px) {
@@ -10,7 +10,7 @@ div[ng-app] div.nonactive {
   }
 }
 @media (max-width: 599px) {
-  div[ng-app] div.active:not(.lastActive) {
+  #basicdata div.active:not(.lastActive) {
     display: none;
   }
 }
