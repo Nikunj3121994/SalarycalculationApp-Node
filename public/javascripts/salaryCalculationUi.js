@@ -25,11 +25,11 @@
         }
     }
 
-    $('#employees').on('click', '.employee', function () {
+    $('#html').on('click', '.employee', function () {
         clickHandler($(this), '.employee', '#employees');
     });
 
-    $('#employeesAndEmployeeGroups').on('click', '.employeeGroup', function () {
+    $('#html').on('click', '.employeeGroup', function () {
         clickHandler($(this), '.employeeGroup', '#employeeGroups');
     });
 

@@ -2,7 +2,7 @@
 
     var rowTypes = {};
 
-    $http.get('../api/CalculationRowType').success(function (data) {
+    $http.get('../api/CalculationRowType/').success(function (data) {
         for (var i = 0; i < data.length; i++) {
             rowTypes[data[i].Id] = { Name: data[i].Name, RowType: data[i].RowType };
         }

@@ -2,30 +2,38 @@
 
     <a href class="returnLink" ng-click="getEmployer()">Back to employer</a>
 
-    <p>EmployeeId: {{ employee.EmployeeId }} </p>
-    <p>Name: {{ employee.Name }} </p>
-    <p>Phone: {{ employee.Phone }} </p>
-    <p>Email: {{ employee.Email }} </p>
-    <p>EmployerId: {{ employee.EmployerId }} </p>
-    <p>Employer: {{ employee.Employer }} </p>
-    <ul>
-        <li ng-repeat="childdata in employee.SalaryCalculations">
-            <p>
+    <div class="col-xs-12">
+        <div id="employeeLabels" class="col-xs-2">
+            <label for="Name">Name</label>
+        </br>
+        <label for="Phone">Phone</label>
+    </div>
+    <div class="col-xs-4">
+        <input type="text" ng-model="employee.name" name="Name" />
+    </br>
+    <input type="text" ng-model="employee.phone" name="Phone" />
+</div>
+<div class="col-xs-12">
+    <input type="button" id="submit" value="Submit" ng-click="submitEmployee()" />
+</div>
+<ul>
+    <li ng-repeat="childdata in employee.SalaryCalculations">
+       <p>
 
-                <a href ng-click="getSalaryCalculation( childdata.SalaryCalculationId )">SalaryCalculationId: {{ childdata.SalaryCalculationId }}</a>
-                PeriodStartDate: {{ childdata.PeriodStartDate }} 						PeriodEndDate: {{ childdata.PeriodEndDate }} 						GrossAmount: {{ childdata.GrossAmount }} 						NetAmount: {{ childdata.NetAmount }} 						Tax: {{ childdata.Tax }} 						EmployeeId: {{ childdata.EmployeeId }} 						Employee: {{ childdata.Employee }}
-            </p>
-        </li>
-    </ul>
-    <ul>
-        <li ng-repeat="childdata in employee.Taxcards">
-            <p>
+        <a href ng-click="getSalaryCalculation( childdata.SalaryCalculationId )">SalaryCalculationId: {{ childdata.SalaryCalculationId }}</a>
+        PeriodStartDate: {{ childdata.PeriodStartDate }} 						PeriodEndDate: {{ childdata.PeriodEndDate }} 						GrossAmount: {{ childdata.GrossAmount }} 						NetAmount: {{ childdata.NetAmount }} 						Tax: {{ childdata.Tax }} 						EmployeeId: {{ childdata.EmployeeId }} 						Employee: {{ childdata.Employee }}
+    </p>
+</li>
+</ul>
+<ul>
+    <li ng-repeat="childdata in employee.Taxcards">
+        <p>
 
-                <a href ng-click="getTaxcard( childdata.TaxcardId )">TaxcardId: {{ childdata.TaxcardId }}</a>
-                TaxPercentage: {{ childdata.TaxPercentage }} 						EmployeeId: {{ childdata.EmployeeId }} 						Employee: {{ childdata.Employee }}
-            </p>
-        </li>
-    </ul>
+            <a href ng-click="getTaxcard( childdata.TaxcardId )">TaxcardId: {{ childdata.TaxcardId }}</a>
+            TaxPercentage: {{ childdata.TaxPercentage }} 						EmployeeId: {{ childdata.EmployeeId }} 						Employee: {{ childdata.Employee }}
+        </p>
+    </li>
+</ul>
 
 </div>
 

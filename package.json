@@ -3,6 +3,8 @@
 	"version": "0.0.1",
 	"description": "Salary calculation demo app",
 	"dependencies": {
-		"mime": "~1.2.7"
+		"mime": "~1.2.7",
+		"connect": "latest",
+		"mongoose": "latest"
 	}
 }

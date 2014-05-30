@@ -1,13 +1,33 @@
 <div>
 
-<h2>Here you can modify your own data as employer as well as the basic data related to your employees</h2>
+	<h2>Here you can modify your own data as employer as well as the basic data related to your employees</h2>
 
-	<div  id='basicdata'>
-	
-	    <div class="col-md-11 active" ng-include="'partials/employer.html'"></div>
-	    <div class="col-md-1" ng-class="employee != undefined ? 'active' : 'nonactive'" ng-include="'partials/employee.html'"></div>
-	    <div class="col-md-1" ng-class="taxcard != undefined ? 'active' : 'nonactive'" ng-include="'partials/taxcard.html'"></div>
+	<br>
 
-    </div>
-     
+	<div class="col-xs-12">
+		<div id="employerLabels" class="col-xs-2">
+			<label for="Name">Name</label>
+		</br>
+		<label for="Phone">Phone</label>
+	</div>
+	<div class="col-xs-4">
+		<input type="text" ng-model="employer.name" name="Name" />
+	</br>
+	<input type="text" ng-model="employer.phone" name="Phone" />
+</div>
+<div class="col-xs-12">
+	<input type="button" id="submit" value="Submit" ng-click="submit()" />
+</div>
+</div>
+
+<div id="employees" class="col-xs-12">
+	<li ng-repeat="childdata in employer.employees">
+		<p>
+			<a href ng-click="showEmployee( childdata.EmployeeId )">Employee: {{ childdata.name }}</a>
+		</p>
+	</li>
+</div>
+
+<div class="col-xs-12" ng-hide="!employee" ng-include="'partials/employee.html'"></div>
+
 </div>
