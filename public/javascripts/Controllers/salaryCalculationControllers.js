@@ -1,7 +1,7 @@
-﻿var salaryCalculationControllers = angular.module('salaryCalculationControllers', ['LocalStorageModule'])
-    .config(['localStorageServiceProvider', function (localStorageServiceProvider) {
-        localStorageServiceProvider.setPrefix('sca');
-    }]);
+var salaryCalculationControllers = angular.module('salaryCalculationControllers', ['LocalStorageModule'])
+.config(['localStorageServiceProvider', function (localStorageServiceProvider) {
+    localStorageServiceProvider.setPrefix('sca');
+}]);
 
 salaryCalculationControllers.controller('salaryCalculationRootCtrl', ['$scope', '$http', 'localStorageService', 'eventBroadcast', 'uiHelper',
     function ($scope, $http, localStorageService, eventBroadcast, uiHelper) {
@@ -47,15 +47,15 @@ salaryCalculationControllers.controller('employeeAndEmployeeGroupController', ['
         //    $scope.employees = employeeService.data();
         //});
 
-        $scope.selectEmployee = function (employee) {
-            if (employee.selected === true) {
-                employee.selected = false;
-            } else {
-                employee.selected = true;
-            }
+$scope.selectEmployee = function (employee) {
+    if (employee.selected === true) {
+        employee.selected = false;
+    } else {
+        employee.selected = true;
+    }
 
-            eventBroadcast.broadcast('employeeSelectionChanged', employee);
-        };
+    eventBroadcast.broadcast('employeeSelectionChanged', employee);
+};
 
         // When 'submit' is broadcast, give the selected employees/groups.
         $scope.$on('submitCalculation', function () {
@@ -78,18 +78,25 @@ salaryCalculationControllers.controller('employeeAndEmployeeGroupController', ['
 
     }]);
 
-salaryCalculationControllers.controller('processController', ['$scope', '$http',
-    function ($scope, $http) {
+salaryCalculationControllers.controller('processController', ['$scope', '$http', 'eventBroadcast',
+    function ($scope, $http, eventBroadcast) {
 
         //TODO: think about where to store the current employer Id, it is needed here.
-        var employerId = '123';
 
         //Start by loading calculations being processed.
-        $http.get('../api/Calculation/' + employerId + '?statusNotIn=done').success(function (data) {
+        $http.get('../api/Calculation').success(function (data) {
             $scope.calculationsBeingProcessed = data;
         });
 
-        //TODO: Create a function for SignalR to call and update statuses in real-time.
+        $scope.canEditCalculation = function(calculation) {
+            if (calculation.status == 'submitted') return true;
+
+            return false;
+        }
+
+        $scope.editCalculation = function(calculation) {
+            eventBroadcast.broadcast('editCalculation', calculation);
+        }
 
     }]);
 
@@ -121,11 +128,20 @@ salaryCalculationControllers.controller('salaryCalculationController', ['$scope'
             var periodEndDate = new Date(new Date(new Date(periodStartDate).setMonth(periodStartDate.getMonth() + 1)) - 1);
 
             //Set some defaults.
+            setCalculationPeriodDates(periodStartDate, periodEndDate);
             $scope.calculationBasicdata.PeriodStartDate = periodStartDate.getDate() + '.' + (periodStartDate.getMonth() + 1) + '.' + periodStartDate.getFullYear();
             $scope.calculationBasicdata.PeriodEndDate = periodEndDate.getDate() + '.' + (periodEndDate.getMonth() + 1) + '.' + periodEndDate.getFullYear();
 
             $scope.calculationTotals = [];
         };
+
+        var setCalculationPeriodDates = function(periodStartDate, periodEndDate){
+            if (typeof periodStartDate != Date) periodStartDate = new Date(periodStartDate);
+            if (typeof periodEndDate != Date) periodEndDate = new Date(periodEndDate);
+
+            $scope.calculationBasicdata.PeriodStartDate = periodStartDate.getDate() + '.' + (periodStartDate.getMonth() + 1) + '.' + periodStartDate.getFullYear();
+            $scope.calculationBasicdata.PeriodEndDate = periodEndDate.getDate() + '.' + (periodEndDate.getMonth() + 1) + '.' + periodEndDate.getFullYear();
+        }
 
         $scope.initialize();
 
@@ -143,7 +159,7 @@ salaryCalculationControllers.controller('salaryCalculationController', ['$scope'
             var totalNumber = 0;
             for (var i = 0; i < $scope.calculationRows.length; i++) {
                 var value = $scope.calculationRows[i].Value;
-                totalNumber = totalNumber + ($scope.calculationRows[i].RowType === 'plus' ? value : value * -1);
+                totalNumber = totalNumber + ($scope.calculationRows[i].rowType === 'plus' ? value : value * -1);
             }
 
             return totalNumber;
@@ -156,28 +172,33 @@ salaryCalculationControllers.controller('salaryCalculationController', ['$scope'
         };
 
         $scope.$on('submitCalculation', function () {
-            eventBroadcast.message.calculationRows = $scope.calculationRows;
-        });
+         eventBroadcast.message.basicData = $scope.calculationBasicdata;
+         eventBroadcast.message.calculationRows = $scope.calculationRows;
+     });
 
         $scope.$on('employeeSelectionChanged', function () {
             var employee = eventBroadcast.message;
 
             if (employee.selected) {
                 $scope.calculationTotals[$scope.calculationTotals.length] = {
-                    employeeName: employee.Name,
-                    taxPercentage: employee.Taxcards[0].TaxPercentage
+                    employeeName: employee.name,
+                    taxPercentage: employee.taxPercentage
                 };
             } else {
                 angular.forEach($scope.calculationTotals, function (obj, index) {
-                    if (obj.employeeName === employee.Name) {
+                    if (obj.employeeName === employee.name) {
                         $scope.calculationTotals.splice(index, 1);
                     }
                 });
             }
         });
 
+        $scope.$on('editCalculation', function() {
+            setCalculationPeriodDates(eventBroadcast.message.periodStart, eventBroadcast.message.periodEnd);
+        });
+
         $scope.$on('clearAll', function () {
             $scope.initialize();
         });
     }
-]);
+    ]);

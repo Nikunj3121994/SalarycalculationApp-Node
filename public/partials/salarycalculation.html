@@ -6,16 +6,16 @@
 
         <div id="employees">
             <p class="employee" ng-class="employee.selected ? 'selected' : ''" ng-repeat="employee in employees" ng-click="selectEmployee(employee)">
-                Name: {{ employee.Name }}
+                Name: {{ employee.name }}
             </p>
         </div>
         
         @*<label>...or choose a group</label>
-            <div id="employeeGroups">
-                <p class="employeeGroup">Ones with permanent contract</p>
-                <p class="employeeGroup">Paid by the hour</p>
-                <p class="employeeGroup">Irregular work</p>
-            </div>*@
+        <div id="employeeGroups">
+            <p class="employeeGroup">Ones with permanent contract</p>
+            <p class="employeeGroup">Paid by the hour</p>
+            <p class="employeeGroup">Irregular work</p>
+        </div>*@
     </div>
 
     <div id="salaryCalculation" class="col-md-6" ng-controller="salaryCalculationController">
@@ -32,7 +32,7 @@
         </div>
         <div id="addCalculationRowSection" class="col-md-12">
             <label class="col-md-5">Add calculation row:</label>
-            <select class="col-md-4 col-md-push-3" ng-model="selectedRowType" ng-options="type.Id as type.Name for type in possibleCalculationRowTypes" id="addCalculationRow" ng-change="addCalculationRow()"></select>
+            <select class="col-md-4 col-md-push-3" ng-model="selectedRowType" ng-options="type._id as type.friendlynames[0].friendlyName for type in possibleCalculationRowTypes" id="addCalculationRow" ng-change="addCalculationRow()"></select>
         </div>
         <div class="col-md-12 calculationRow" ng-class="calculationRow.RowType" ng-repeat="calculationRow in calculationRows | orderBy:'RowType':true">
             <div class="col-md-6">
@@ -53,11 +53,13 @@
 
     <div id="calculationProcessing" class="col-md-3" ng-controller="processController">
         here you will see the processing of salary calculations
-        <div ng-class="calculation.Status" ng-repeat="calculation in calculationsBeingProcessed">
-            <label>From {{ calculation.PeriodStartDate }} to {{ calculation.PeriodEndDate }}</label>
-            <label>{{ getFriendlyName(calculation.Status, 'status') }}</label>
+        <div ng-class="calculation.status" ng-repeat="calculation in calculationsBeingProcessed">
+            <label>From {{ calculation.periodStart }} to {{ calculation.periodEnd }}</label>
+            <label>{{ getFriendlyName(calculation.status, 'status') }}</label>
+            <a href ng-click="editCalculation(calculation)" ng-enabled="canEditCalculation(calculation)">Edit</a>
         </div>
     </div>
+
     <div id="notificationSection" class="col-md-12" ng-controller="notificationsController">
         <p ng-repeat="notification in notifications track by $index" ng-class="notification.type">
             {{ notification.message }}
