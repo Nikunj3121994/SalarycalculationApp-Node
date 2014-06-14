@@ -10,23 +10,23 @@ salaryCalculationControllers.controller('salaryCalculationRootCtrl', ['$scope', 
 
         $scope.submitCalculation = function () {
 
-            eventBroadcast.broadcast('notificationSent', { type: 'warning', message: 'About to send your calculation to server, do not unplug your machine.' });
+            eventBroadcast.sendNotification({ type: 'warning', message: 'About to send your calculation to server, do not unplug your machine.' });
 
             //Broadcast event to ask controllers to give their data.
             var dataToSave = {};
-            eventBroadcast.broadcast('submitCalculation', dataToSave);
+            eventBroadcast.submitCalculation(dataToSave);
 
             //Save in local storage first.
             localStorageService.clearAll();
             localStorageService.add('submittedSalaryCalculation', dataToSave);
 
             $http.post('../api/Calculation', dataToSave).success(function (ret) {
-                eventBroadcast.broadcast('notificationSent', { type: 'info', message: 'Your calculation has been succesfully committed to server.' });
-                localStorageService.clearAll();
+                eventBroadcast.sendNotification({ type: 'info', message: 'Your calculation has been succesfully committed to server.' });
+                //localStorageService.clearAll();
 
-                eventBroadcast.broadcast('clearAll');
+                eventBroadcast.clearAll();
             }).error(function (ret) {
-                eventBroadcast.broadcast('notificationSent', { type: 'error', message: 'Sending your calculation to the server failed. Don\'t worry, it is saved in your browser and you can try sending it again later.' });
+                eventBroadcast.sendNotification({ type: 'error', message: 'Sending your calculation to the server failed. Don\'t worry, it is saved in your browser and you can try sending it again later.' });
             });
 
         };
@@ -40,12 +40,25 @@ salaryCalculationControllers.controller('employeeAndEmployeeGroupController', ['
             $scope.employees = data;
         });
 
-        //This was an attempt to get the employees from a service. I will keep this here for later reference. 
-        //This was also my first proper look into promise objects.
-        //
-        //employeeService.async().then(function () {
+        // This was an attempt to get the employees from a service. I will keep this here for later reference. 
+        // This was also my first proper look into promise objects.
+        
+        // employeeService.async().then(function () {
         //    $scope.employees = employeeService.data();
-        //});
+        // });
+
+eventBroadcast.onEditCalculation($scope, function(calculationToEdit) {
+
+    eventBroadcast.clearAll();
+
+    angular.forEach(calculationToEdit.employees, function (employeeId, index) {
+        angular.forEach($scope.employees, function (employee, index) {
+            if (employeeId === employee._id) {
+                $scope.selectEmployee(employee);
+            }
+        });
+    });
+});
 
 $scope.selectEmployee = function (employee) {
     if (employee.selected === true) {
@@ -54,23 +67,23 @@ $scope.selectEmployee = function (employee) {
         employee.selected = true;
     }
 
-    eventBroadcast.broadcast('employeeSelectionChanged', employee);
+    eventBroadcast.employeeSelectionChanged(employee);
 };
 
         // When 'submit' is broadcast, give the selected employees/groups.
-        $scope.$on('submitCalculation', function () {
-            eventBroadcast.message.selectedEmployees = new Array();
+        eventBroadcast.onSubmitCalculation($scope, function (calculationData) {
+            calculationData.selectedEmployees = new Array();
 
             for (var i = 0; i < $scope.employees.length; i++) {
                 var emp = $scope.employees[i];
 
                 if (emp.selected) {
-                    eventBroadcast.message.selectedEmployees[eventBroadcast.message.selectedEmployees.length] = emp;
+                    calculationData.selectedEmployees.push(emp);
                 }
             }
         });
 
-        $scope.$on('clearAll', function () {
+        eventBroadcast.onClearAll($scope, function () {
             for (var i = 0; i < $scope.employees.length; i++) {
                 $scope.employees[i].selected = false;
             }
@@ -95,7 +108,14 @@ salaryCalculationControllers.controller('processController', ['$scope', '$http',
         }
 
         $scope.editCalculation = function(calculation) {
-            eventBroadcast.broadcast('editCalculation', calculation);
+
+            //We only fetch the calculation rows when they are needed, not any sooner.
+            $http.get('../api/CalculationRow/?' + calculation._id).success(function (data) {
+                calculation.calculationRows = data;
+
+                eventBroadcast.editCalculation(calculation);
+                eventBroadcast.sendNotification({ type: 'info', message: 'You are now editing a previously submitted calculation.' });
+            });
         }
 
     }]);
@@ -104,8 +124,8 @@ salaryCalculationControllers.controller('notificationsController', ['$scope', 'e
     function ($scope, eventBroadcast) {
         $scope.notifications = new Array();
 
-        $scope.$on('notificationSent', function () {
-            $scope.notifications[$scope.notifications.length] = eventBroadcast.message;
+        eventBroadcast.onNotificationSent($scope, function (notification) {
+            $scope.notifications[$scope.notifications.length] = notification;
         });
     }]);
 
@@ -146,19 +166,25 @@ salaryCalculationControllers.controller('salaryCalculationController', ['$scope'
         $scope.initialize();
 
         $scope.addCalculationRow = function () {
-            $scope.calculationRows[$scope.calculationRows.length] = {
-                TypeId: $scope.selectedRowType,
-                Value: 0,
-                Name: uiHelper.getFriendlyName($scope.selectedRowType, 'calculationRowTypeName'),
-                RowType: uiHelper.getFriendlyName($scope.selectedRowType, 'calculationRowType')
-            };
+            privateAddCalculationRow($scope.selectedRowType, 0);
+
             $scope.selectedRowType = ''; //Clear this bound field to empty the dropdown again.
         };
+
+        var privateAddCalculationRow = function(rowTypeId, value, employeeId) {
+            $scope.calculationRows[$scope.calculationRows.length] = {
+                typeId: rowTypeId,
+                value: value,
+                employeeId: employeeId,
+                name: uiHelper.getFriendlyName(rowTypeId, 'calculationRowTypeName'),
+                rowType: uiHelper.getFriendlyName(rowTypeId, 'calculationRowType')
+            };
+        }
 
         $scope.total = function () {
             var totalNumber = 0;
             for (var i = 0; i < $scope.calculationRows.length; i++) {
-                var value = $scope.calculationRows[i].Value;
+                var value = $scope.calculationRows[i].value;
                 totalNumber = totalNumber + ($scope.calculationRows[i].rowType === 'plus' ? value : value * -1);
             }
 
@@ -171,14 +197,12 @@ salaryCalculationControllers.controller('salaryCalculationController', ['$scope'
             return (taxPercentage / 100) * total;
         };
 
-        $scope.$on('submitCalculation', function () {
-         eventBroadcast.message.basicData = $scope.calculationBasicdata;
-         eventBroadcast.message.calculationRows = $scope.calculationRows;
-     });
+        eventBroadcast.onSubmitCalculation($scope, function (calculationData) {
+            calculationData.basicData = $scope.calculationBasicdata;
+            calculationData.calculationRows = $scope.calculationRows;
+        });
 
-        $scope.$on('employeeSelectionChanged', function () {
-            var employee = eventBroadcast.message;
-
+        eventBroadcast.onEmployeeSelectionChanged($scope, function (employee) {
             if (employee.selected) {
                 $scope.calculationTotals[$scope.calculationTotals.length] = {
                     employeeName: employee.name,
@@ -193,11 +217,17 @@ salaryCalculationControllers.controller('salaryCalculationController', ['$scope'
             }
         });
 
-        $scope.$on('editCalculation', function() {
-            setCalculationPeriodDates(eventBroadcast.message.periodStart, eventBroadcast.message.periodEnd);
+        eventBroadcast.onEditCalculation($scope, function(calculationToEdit) {
+            setCalculationPeriodDates(calculationToEdit.periodStart, calculationToEdit.periodEnd);
+
+            $scope.calculationRows = [];
+
+            angular.forEach(calculationToEdit.calculationRows, function (obj, index) {
+                privateAddCalculationRow(obj._calculationRowType, obj.value);
+            });
         });
 
-        $scope.$on('clearAll', function () {
+        eventBroadcast.onClearAll($scope, function () {
             $scope.initialize();
         });
     }

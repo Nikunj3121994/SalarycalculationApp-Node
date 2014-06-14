@@ -34,12 +34,12 @@
             <label class="col-md-5">Add calculation row:</label>
             <select class="col-md-4 col-md-push-3" ng-model="selectedRowType" ng-options="type._id as type.friendlynames[0].friendlyName for type in possibleCalculationRowTypes" id="addCalculationRow" ng-change="addCalculationRow()"></select>
         </div>
-        <div class="col-md-12 calculationRow" ng-class="calculationRow.RowType" ng-repeat="calculationRow in calculationRows | orderBy:'RowType':true">
+        <div class="col-md-12 calculationRow" ng-class="calculationRow.rowType" ng-repeat="calculationRow in calculationRows | orderBy:'rowType':true">
             <div class="col-md-6">
-                <label>{{ calculationRow.Name }}</label>
+                <label>{{ calculationRow.name }}</label>
             </div>
             <div class="col-md-4 col-md-push-2">
-                <input type="number" ng-model="calculationRow.Value" />
+                <input type="number" ng-model="calculationRow.value" />
             </div>
         </div>
         <div class="col-md-12" id="calculationTotals" ng-repeat="calculationTotal in calculationTotals">
