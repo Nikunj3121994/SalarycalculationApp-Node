@@ -15,7 +15,7 @@ basicdataControllers.controller('basicdataCtrl', ['$scope', '$http', '$filter',
         getEmployer();
 
         var getEmployees = function () {
-            $http.get('../api/Employee/?' + $scope.employer._id).success(function (data) {
+            $http.get('../api/Employee/' + $scope.employer._id).success(function (data) {
                 $scope.employer.employees = data;
 
                 if (data.length == 0)

@@ -97,7 +97,7 @@ salaryCalculationControllers.controller('processController', ['$scope', '$http',
         //TODO: think about where to store the current employer Id, it is needed here.
 
         //Start by loading calculations being processed.
-        $http.get('../api/Calculation').success(function (data) {
+        $http.get('../api/Calculation/5388937bc78bc6a025d9ee63').success(function (data) {
             $scope.calculationsBeingProcessed = data;
         });
 
@@ -110,7 +110,7 @@ salaryCalculationControllers.controller('processController', ['$scope', '$http',
         $scope.editCalculation = function(calculation) {
 
             //We only fetch the calculation rows when they are needed, not any sooner.
-            $http.get('../api/CalculationRow/?' + calculation._id).success(function (data) {
+            $http.get('../api/CalculationRow/' + calculation._id).success(function (data) {
                 calculation.calculationRows = data;
 
                 eventBroadcast.editCalculation(calculation);

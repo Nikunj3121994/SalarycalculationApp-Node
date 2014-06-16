@@ -5,6 +5,7 @@
 	"dependencies": {
 		"mime": "~1.2.7",
 		"connect": "latest",
-		"mongoose": "latest"
+		"mongoose": "latest",
+		"express": "4.x"
 	}
 }
