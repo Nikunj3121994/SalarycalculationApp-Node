@@ -94,10 +94,8 @@ $scope.selectEmployee = function (employee) {
 salaryCalculationControllers.controller('processController', ['$scope', '$http', 'eventBroadcast',
     function ($scope, $http, eventBroadcast) {
 
-        //TODO: think about where to store the current employer Id, it is needed here.
-
         //Start by loading calculations being processed.
-        $http.get('../api/Calculation/5388937bc78bc6a025d9ee63').success(function (data) {
+        $http.get('../api/Calculation/').success(function (data) {
             $scope.calculationsBeingProcessed = data;
         });
 
