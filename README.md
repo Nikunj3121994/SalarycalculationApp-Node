@@ -6,7 +6,6 @@ Working now:
  - you need to login using Google authentication to use the app, the login page is ugly at the moment, maybe make a proper landing page in the future.
 
 Next small steps:
- - make server.js prettier
  - implement logging
 
 Next big steps:
