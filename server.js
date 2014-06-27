@@ -9,8 +9,12 @@ var routes = require('./lib/routes')();
 require('./lib/schemas')();
 var systemInit = require('./lib/systemInit');
 var passport = require('passport');
+var bodyParser = require('body-parser');
+var methodOverride = require('method-override');
 
 var app = express()
+.use(bodyParser())
+.use(methodOverride())
 .use(connect.favicon())
 .use(connect.logger('dev'))
 .use(connect.cookieParser())

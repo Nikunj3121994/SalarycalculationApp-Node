@@ -9,6 +9,8 @@
 		"express": "4.x",
 		"passport": "0.2.0",
 		"passport-google": "0.3.0",
-		"ejs": "1.0.0"
+		"ejs": "1.0.0",
+		"method-override": "2.0.2",
+		"body-parser": "1.4.2"
 	}
 }

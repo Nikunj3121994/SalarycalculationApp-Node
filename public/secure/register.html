@@ -1,0 +1,45 @@
+﻿<div>
+
+	<p>Create a new employer or employee profile. You can register as both an employer and an employee.</p>
+
+	<% if (!profiles.employer) { %>
+	<form name="registerAsEmployer" action="/api/register/employer" method="post">
+
+		<p>Click this button to register a new employer profile. At the moment there is no need to fill in anything :)</p>
+
+		<input type="submit" value="Register as an employer">
+	</form>
+	<% 	} else { %>
+
+	<form name="loginAsEmployer" action="/login/employer" method="post">
+
+		<p>You have already registered as an employer, click here to proceed to the application as an employer.</p>
+
+		<input type="submit" value="Login as an employer">
+	</form>
+
+	<% 	} %>
+
+	<% if (!profiles.employee) { %>
+	<form name="registerAsEmployee" action="/api/register/employee" method="post">
+
+		<p>Click here to register a new employee profile.</p>
+		<p>You can only register as an employee if at least one employer has added you as an employee earlier.</p>
+
+		<label for='PID'>Personal identification number</label>
+		<input type='text' id='pid' name='PID' />
+
+		<input type="submit" value="Register as an employee">
+	</form> 
+	<% 	} else { %>
+
+	<form name="loginAsEmployee" action="/login/employee" method="post">
+
+		<p>You have already registered as an employee, click here to proceed to the application as an employee.</p>
+
+		<input type="submit" value="Login as an employee">
+	</form>
+
+	<% 	} %>
+
+</div>
