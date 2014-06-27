@@ -2,6 +2,7 @@ var options = {
 	baseUrl: 'http://localhost:3000'
 }
 
+//dependencies
 var mongoose = require('mongoose');
 var connect = require('connect');
 var express = require('express');
@@ -11,7 +12,9 @@ var systemInit = require('./lib/systemInit');
 var passport = require('passport');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
+var errorhandling = require('./lib/errorhandling')(options);
 
+//middleware
 var app = express()
 .use(bodyParser())
 .use(methodOverride())
@@ -26,6 +29,10 @@ var app = express()
 .use(connect.static('public')) //use the same mounting point ('/') here and in the next connect.static call, but authenticate the latter one with the next express router configuration.
 .use(routes.secureRoutes())
 .use(connect.static('public/secure'))
+.use(errorhandling.handleUnhandledRequests)
+.use(errorhandling.handleServerErrors)
+
+//settings
 .set('views', __dirname + '/public/secure')
 .set('view engine', 'html')
 .engine('html', require('ejs').renderFile);
