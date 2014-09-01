@@ -23,7 +23,7 @@
 
         <header>
             <% if (isLoggedIn) { %>
-                <a href="/logout">Logout</a>                
+            <a href="/logout">Logout</a>                
             <% } %>
         </header>
 
@@ -37,18 +37,21 @@
 
     </div>
 
-    <script src="/javascripts/Vendor/jquery-1.10.2.min.js"> </script>       
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/rxjs/2.3.0/rx.lite.js"></script>
     <script src="/javascripts/Vendor/bootstrap.min.js"> </script>
-    <script src="/javascripts/Vendor/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular.min.js"></script>
+    <script src="/javascripts/Vendor/rx.angular.js"></script>    
     <script src="/javascripts/Vendor/angular-route.min.js"></script>
     <script src="/javascripts/Controllers/basicdataCtrl.js"> </script>
     <script src="/javascripts/app.js"></script>
     <script src="/javascripts/Vendor/angular-local-storage.min.js"> </script>    
     <script src="/javascripts/Services/eventbroadcaster.js"> </script>
     <script src="/javascripts/Services/uiHelper.js"> </script>
-    <script src="/javascripts/Services/employeeService.js"> </script>
     <script src="/javascripts/Controllers/salaryCalculationControllers.js"> </script>
     <script src="/javascripts/salaryCalculationUi.js"> </script>
+    <script src="/javascripts/Services/observableService.js"> </script>
+    
 
 </body>
 

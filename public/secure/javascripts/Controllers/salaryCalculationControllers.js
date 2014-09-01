@@ -33,12 +33,19 @@ salaryCalculationControllers.controller('salaryCalculationRootCtrl', ['$scope', 
 
     }]);
 
-salaryCalculationControllers.controller('employeeAndEmployeeGroupController', ['$scope', '$http', 'eventBroadcast', 'employeeService',
-    function ($scope, $http, eventBroadcast, employeeService) {
+salaryCalculationControllers.controller('employeeAndEmployeeGroupController', ['$scope', '$http', 'eventBroadcast', 'observableService',
+    function ($scope, $http, eventBroadcast, observableService) {
 
         $http.get('../api/Employee/').success(function (data) {
             $scope.employees = data;
         });
+
+        observableService.merge(
+            $scope.$createObservableFunction('click')
+            .map(function () {
+                return 'employee was selected/unselected';
+            })
+        );
 
         // This was an attempt to get the employees from a service. I will keep this here for later reference. 
         // This was also my first proper look into promise objects.
@@ -47,28 +54,30 @@ salaryCalculationControllers.controller('employeeAndEmployeeGroupController', ['
         //    $scope.employees = employeeService.data();
         // });
 
-eventBroadcast.onEditCalculation($scope, function(calculationToEdit) {
+        eventBroadcast.onEditCalculation($scope, function(calculationToEdit) {
 
-    eventBroadcast.clearAll();
+            eventBroadcast.clearAll();
 
-    angular.forEach(calculationToEdit.employees, function (employeeId, index) {
-        angular.forEach($scope.employees, function (employee, index) {
-            if (employeeId === employee._id) {
-                $scope.selectEmployee(employee);
-            }
+            angular.forEach(calculationToEdit.employees, function (employeeId, index) {
+                angular.forEach($scope.employees, function (employee, index) {
+                    if (employeeId === employee._id) {
+                        $scope.selectEmployee(employee);
+                    }
+                });
+            });
         });
-    });
-});
 
-$scope.selectEmployee = function (employee) {
-    if (employee.selected === true) {
-        employee.selected = false;
-    } else {
-        employee.selected = true;
-    }
+        $scope.selectEmployee = function (employee) {
+            if (employee.selected === true) {
+                employee.selected = false;
+            } else {
+                employee.selected = true;
+            }
 
-    eventBroadcast.employeeSelectionChanged(employee);
-};
+            $scope.click();
+
+            eventBroadcast.employeeSelectionChanged(employee);
+        };
 
         // When 'submit' is broadcast, give the selected employees/groups.
         eventBroadcast.onSubmitCalculation($scope, function (calculationData) {
@@ -89,7 +98,7 @@ $scope.selectEmployee = function (employee) {
             }
         });
 
-    }]);
+}]);
 
 salaryCalculationControllers.controller('processController', ['$scope', '$http', 'eventBroadcast',
     function ($scope, $http, eventBroadcast) {
@@ -116,7 +125,7 @@ salaryCalculationControllers.controller('processController', ['$scope', '$http',
             });
         }
 
-    }]);
+}]);
 
 salaryCalculationControllers.controller('notificationsController', ['$scope', 'eventBroadcast',
     function ($scope, eventBroadcast) {
@@ -127,8 +136,8 @@ salaryCalculationControllers.controller('notificationsController', ['$scope', 'e
         });
     }]);
 
-salaryCalculationControllers.controller('salaryCalculationController', ['$scope', '$http', 'eventBroadcast', 'uiHelper', 'employeeService',
-    function ($scope, $http, eventBroadcast, uiHelper, employeeService) {
+salaryCalculationControllers.controller('salaryCalculationController', ['$scope', '$http', 'eventBroadcast', 'uiHelper', 'observableService', 'observeOnScope',
+    function ($scope, $http, eventBroadcast, uiHelper, observableService, observeOnScope) {
 
         $scope.initialize = function () {
             $scope.calculationRows = new Array();
@@ -178,6 +187,37 @@ salaryCalculationControllers.controller('salaryCalculationController', ['$scope'
                 rowType: uiHelper.getFriendlyName(rowTypeId, 'calculationRowType')
             };
         }
+
+        var $results = $('#results');
+
+        var subscriber = function (data) {
+            var res = data;
+            $('<li>' + data + '</li>').appendTo($results);
+        }
+
+        var datachanges = observeOnScope($scope, function($scope)
+            { return $scope.calculationRows.
+                        map(function(obj) {
+                            return obj.value
+                        });
+            }, function (newVal, oldVal) {
+                if (newVal !== oldVal) {
+                    return newVal;
+                }
+            }, true)
+        .map(function(data) { return 'value changed: ' + data.newValue; });
+
+        var calculationFunction = function(val) {
+                //TODO: This should call the server and return calculation result.
+            return Rx.Observable.return(
+                $scope.calculationRows.reduce(function(previousValue, currentValue, index, array) { 
+                    return previousValue + currentValue.value 
+                }, 0)
+            );
+        }
+
+        //NOTE: without this subscription the observable never becomes 'live' and the employee clicking also does not work (says 'scope.click undefined').
+        observableService.merge(datachanges).flatMapLatest(calculationFunction).distinctUntilChanged().subscribe(subscriber);
 
         $scope.total = function () {
             var totalNumber = 0;
