@@ -20,10 +20,10 @@
   line-height: 1.0;
 }
 #notificationSection > p.info {
-  color: #f0f8ff;
+  color: aliceblue;
 }
 #notificationSection > p.error {
-  color: #ff0000;
+  color: red;
 }
 #notificationSection > p.warning {
   color: #ff6a00;
@@ -63,7 +63,7 @@
   min-height: 500px;
 }
 #calculationProcessing > .cancelled {
-  background-color: #ff0000;
+  background-color: red;
 }
 #salaryCalculation > div.plus {
   background-color: rgba(144, 238, 144, 0.3);

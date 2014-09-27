@@ -1,20 +1,26 @@
-﻿//This is not needed anymore, this was just an attempt to give several controllers access to employees in one
-//central location.
-app.factory('employeeService', function ($http, $q) {
-    var deferred = $q.defer();
-    var data = [];
+﻿app.factory('employeeService', function () {
+    var selectedEmployees = [];
     var employeeService = {};
 
-    employeeService.async = function () {
-        $http.get('../api/Employee/').success(function (d) {
-            data = d;
-            console.log(d);
-            deferred.resolve(data);
-        });
-        return deferred.promise;
+    employeeService.selectedEmployees = function () {
+        return selectedEmployees;
     };
-    
-    employeeService.data = function () { return data; };
 
+    employeeService.addSelectedEmployee = function(employee) {
+        selectedEmployees.push(employee);
+
+        return selectedEmployees;
+    }
+
+    employeeService.removeEmployee = function(employee) {
+        angular.forEach(selectedEmployees, function (obj, index) {
+            if (obj.name === employee.name) {
+                selectedEmployees.splice(index, 1);
+            }
+        });
+
+        return selectedEmployees;
+    }
+    
     return employeeService;
 })

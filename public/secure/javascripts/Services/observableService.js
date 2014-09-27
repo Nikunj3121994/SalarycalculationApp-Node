@@ -1,13 +1,11 @@
-app.factory('observableService', function ($http, rx) {
+app.factory('observableService', function ($http) {
 
     var observableService = {};
 
-    var brokerSequence = Rx.Observable.never();
+    var subject = new Rx.Subject();
 
-    observableService.merge = function (observable) {
-        brokerSequence = brokerSequence.merge(observable);
-
-        return brokerSequence.throttle(1000);
+    observableService.subject = function () {
+        return subject;
     }
 
     return observableService;

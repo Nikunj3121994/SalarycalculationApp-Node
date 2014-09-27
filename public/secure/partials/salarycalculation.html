@@ -51,9 +51,9 @@
         </div>
         <div class="col-md-12" id="calculationTotals" ng-repeat="calculationTotal in calculationTotals">
             <label class="col-md-12">Employee {{ calculationTotal.employeeName }}, tax percentage {{ calculationTotal.taxPercentage }}</label>
-            <p class="col-md-12 col-md-push-6">total taxable {{ total() }}</p>
-            <p class="col-md-12 col-md-push-6" ng-bind="totalTax(calculationTotal.taxPercentage)">this will get replaced?</p>
-            <p class="col-md-12 col-md-push-6">total payable {{ total() - totalTax(calculationTotal.taxPercentage) }}</p>
+            <p class="col-md-12 col-md-push-6">total taxable {{ calculationTotal.totalTaxable }}</p>
+            <p class="col-md-12 col-md-push-6">total tax {{ calculationTotal.totalTax }}</p>
+            <p class="col-md-12 col-md-push-6">total payable {{ calculationTotal.totalPayable }}</p>
         </div>
         <input ng-hide="calculationRows.length === 0" type="button" id="calculationSubmitBtn" class="col-md-4 col-md-push-8" value="Submit calculation" ng-click="submitCalculation()" />
     </div>
@@ -63,7 +63,8 @@
         <div ng-class="calculation.status" ng-repeat="calculation in calculationsBeingProcessed">
             <label>From {{ calculation.periodStart }} to {{ calculation.periodEnd }}</label>
             <label>{{ getFriendlyName(calculation.status, 'status') }}</label>
-            <a href ng-click="editCalculation(calculation)" ng-enabled="canEditCalculation(calculation)">Edit</a>
+            <a href="" ng-click="editCalculation(calculation)" ng-show="{{canEditCalculation(calculation)}}" >Edit</a>
+            <a href="" ng-click="cancelCalculation(calculation)" ng-show="{{canCancelCalculation(calculation)}}">Cancel</a>
         </div>
     </div>
 
